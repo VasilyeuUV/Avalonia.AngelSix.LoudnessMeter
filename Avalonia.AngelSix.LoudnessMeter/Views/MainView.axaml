@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Avalonia.AngelSix.LoudnessMeter.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="1048" d:DesignHeight="645"
              x:Class="Avalonia.AngelSix.LoudnessMeter.Views.MainView"
              x:DataType="vm:MainViewModel"
              
@@ -17,6 +17,7 @@
   </Design.DataContext>
 
   <UserControl.Styles>
+    
     <Style Selector="Button.small">
       <Setter Property="FontSize" Value="12"></Setter>
       <Setter Property="Foreground" Value="White"></Setter>
@@ -26,17 +27,64 @@
       <Setter Property="HorizontalAlignment" Value="Center"></Setter>
       <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
+    
     <Style Selector="Button:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource BrightBlueHoverBrush}"/>
       <Setter Property="TextBlock.Foreground" Value="White"/>
     </Style>
+
+    <Style Selector="Border.channel">
+      <Setter Property="Width" Value="0"/>
+      <Setter Property="Height" Value="0"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Width" Duration="0:0:0.2" Easing="QuadraticEaseIn"/>
+          <DoubleTransition Property="Height" Duration="0:0:0.2" Easing="QuadraticEaseIn"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="Border.channel.open">
+      <Setter Property="Width" Value="300"/>
+      <Setter Property="Height" Value="600"/>
+    </Style>    
+    
   </UserControl.Styles>
 
-  
-  
-  <Grid RowDefinitions="Auto, *, Auto">
 
-    <!--Title bar-->
+
+  <!-- MAIN GRID -->
+  <Grid Name="MainGrid" RowDefinitions="Auto, *, Auto" Background="White">
+
+    <!--#######################################################################################################-->
+    <!-- Channel Configuration Popup Closer -->
+    <Border Grid.Row="0" Grid.RowSpan="3" 
+            Background="Transparent" 
+            ZIndex="1"
+            PointerPressed="Border_PointerPressed"
+            IsVisible="{Binding IsOpenChannelConfigurationList}"
+            />
+    
+    
+    <!--#######################################################################################################-->
+    <!-- Channel Configuration Popup -->
+    <Border Grid.Row="0" 
+            Name="ChannelConfigurationPopup"
+            Classes="channel"
+            Classes.open="{Binding IsOpenChannelConfigurationList}"
+            Grid.RowSpan="3" 
+            Background="Red"
+            ZIndex="2"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Margin="9,0,0,9"
+            >
+      <Label>TEST</Label>
+    </Border>
+    
+    
+    <!--#######################################################################################################-->
+    <!-- Title bar -->
     <Grid Grid.Row="0"
           ColumnDefinitions="Auto, Auto, *, Auto, Auto"
           Background="{DynamicResource MediumGrayBrush}"
@@ -87,6 +135,7 @@
     </Grid>
 
 
+    <!--#######################################################################################################-->
     <!--Main area-->
     <Grid Grid.Row="1"
           ColumnDefinitions="Auto, Auto, *"
@@ -221,11 +270,15 @@
     </Grid>
 
 
+    <!--#######################################################################################################-->
     <!--Bottom bar-->
     <Grid Grid.Row="2"
           ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto, Auto"
           Margin="8">
-      <Button Grid.Column="0" Margin="0, 0, 8, 0">Stereo</Button>
+      <Button Grid.Column="0" 
+              Name="ChannelConfigurationButton"
+              Command="{Binding ChannelConfigurationButtonPressedCommand}"
+              Margin="0, 0, 8, 0">Stereo</Button>
       <Button Grid.Column="1">YouTube</Button>
       <Button Grid.Column="3" Margin="0, 0, 8, 0">10 SEC</Button>
       <Button Grid.Column="4" Margin="0, 0, 8, 0">CONTINUOUS</Button>
