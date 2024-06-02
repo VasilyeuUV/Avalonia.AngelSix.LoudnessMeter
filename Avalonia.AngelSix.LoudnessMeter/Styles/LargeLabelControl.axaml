@@ -1,0 +1,63 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Avalonia.AngelSix.LoudnessMeter.Styles">
+  <Design.PreviewWith>
+    <Border Background="{DynamicResource DarkBlueBrush}">
+      <StackPanel Margin="50">
+        <controls:LargeLabelControl Margin="5"/>
+        <controls:LargeLabelControl Classes="button" Margin="5"/>
+      </StackPanel>      
+    </Border>
+  </Design.PreviewWith>
+
+  <Style Selector="controls|LargeLabelControl">
+    <!-- Set Defaults -->
+    <Setter Property="Background" Value="{DynamicResource MidBlueBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="{TemplateBinding Background}"
+                Padding="15,7">
+          <StackPanel>
+            <Label Content="{TemplateBinding LargeText}"
+                   Foreground="{TemplateBinding Foreground}"
+                   HorizontalAlignment="Center"
+                   Padding="0"
+                   FontSize="21"/>
+            <Label Content="{TemplateBinding SmallText}"
+                   Foreground="{TemplateBinding Foreground}"
+                   HorizontalAlignment="Center"
+                   Padding="0"
+                   FontSize="11"/>
+          </StackPanel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="controls|LargeLabelControl.button">
+    <!-- Set Defaults -->
+    <Setter Property="Background" Value="{DynamicResource MidBlueBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+          <StackPanel>
+            <Label Content="{TemplateBinding LargeText}"
+                   Foreground="{TemplateBinding Foreground}"
+                   HorizontalAlignment="Center"
+                   FontSize="21"
+                   Padding="15,3"
+                   CornerRadius="20"
+                   Background="{TemplateBinding Background}"/>
+            <Label Content="{TemplateBinding SmallText}"
+                   Foreground="{TemplateBinding Foreground}"
+                   HorizontalAlignment="Center"
+                   Padding="0"
+                   FontSize="11"
+                   Margin="0,5,0,7"/>
+          </StackPanel>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  
+</Styles>

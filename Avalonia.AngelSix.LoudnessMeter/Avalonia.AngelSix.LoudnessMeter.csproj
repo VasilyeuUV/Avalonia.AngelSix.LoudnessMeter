@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AvaloniaResource Remove="Assets\Images\Cag.svg" />
+    <AvaloniaResource Remove="Assets\Images\DoubleArrow.svg" />
+    <AvaloniaResource Remove="Assets\Images\Export.svg" />
+    <AvaloniaResource Remove="Assets\Images\Lock.svg" />
+    <AvaloniaResource Remove="Assets\Images\Monitor.png" />
+    <AvaloniaResource Remove="Assets\Images\Monitor.svg" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Assets\Images\Cag.svg" />
+    <None Remove="Assets\Images\DoubleArrow.svg" />
+    <None Remove="Assets\Images\Export.svg" />
+    <None Remove="Assets\Images\Lock.svg" />
+    <None Remove="Assets\Images\Monitor.png" />
+    <None Remove="Assets\Images\Monitor.svg" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AvaloniaXaml Include="Assets\Images\Cag.svg" />
+    <AvaloniaXaml Include="Assets\Images\DoubleArrow.svg" />
+    <AvaloniaXaml Include="Assets\Images\Export.svg" />
+    <AvaloniaXaml Include="Assets\Images\Lock.svg" />
+    <AvaloniaXaml Include="Assets\Images\Monitor.png" />
+    <AvaloniaXaml Include="Assets\Images\Monitor.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Styles\LargeLabelControl.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>
