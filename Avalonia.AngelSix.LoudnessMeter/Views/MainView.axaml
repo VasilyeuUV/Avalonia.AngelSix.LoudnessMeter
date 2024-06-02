@@ -17,7 +17,15 @@
   </Design.DataContext>
 
   <UserControl.Styles>
-    
+
+    <!--<Style Selector="FlyoutPresenter.test">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="0"/>
+      <Setter Property="Margin" Value="0, -10"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>-->
+
     <Style Selector="Button.small">
       <Setter Property="FontSize" Value="12"></Setter>
       <Setter Property="Foreground" Value="White"></Setter>
@@ -27,13 +35,13 @@
       <Setter Property="HorizontalAlignment" Value="Center"></Setter>
       <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
-    
+
     <Style Selector="Button:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource BrightBlueHoverBrush}"/>
       <Setter Property="TextBlock.Foreground" Value="White"/>
     </Style>
 
-    <Style Selector="Border.channel">
+    <Style Selector="controls|AnimatedPopup.channel">
       <Setter Property="Width" Value="0"/>
       <Setter Property="Height" Value="0"/>
       <Setter Property="Transitions">
@@ -44,11 +52,11 @@
       </Setter>
     </Style>
 
-    <Style Selector="Border.channel.open">
+    <Style Selector="controls|AnimatedPopup.channel.open">
       <Setter Property="Width" Value="300"/>
       <Setter Property="Height" Value="600"/>
-    </Style>    
-    
+    </Style>
+
   </UserControl.Styles>
 
 
@@ -58,31 +66,28 @@
 
     <!--#######################################################################################################-->
     <!-- Channel Configuration Popup Closer -->
-    <Border Grid.Row="0" Grid.RowSpan="3" 
-            Background="Transparent" 
-            ZIndex="1"
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            Background="Transparent"
+            ZIndex="9"
             PointerPressed="Border_PointerPressed"
             IsVisible="{Binding IsOpenChannelConfigurationList}"
             />
-    
-    
+
+
     <!--#######################################################################################################-->
     <!-- Channel Configuration Popup -->
-    <Border Grid.Row="0" 
+    <controls:AnimatedPopup Grid.Row="0"
             Name="ChannelConfigurationPopup"
             Classes="channel"
             Classes.open="{Binding IsOpenChannelConfigurationList}"
-            Grid.RowSpan="3" 
-            Background="Red"
-            ZIndex="2"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
+            Grid.RowSpan="3"
+            Background="White"
             Margin="9,0,0,9"
             >
-      <Label>TEST</Label>
-    </Border>
-    
-    
+      <Label Content="Hello!" Foreground="Red" Background="Black"/>
+    </controls:AnimatedPopup>
+
+
     <!--#######################################################################################################-->
     <!-- Title bar -->
     <Grid Grid.Row="0"
@@ -275,11 +280,27 @@
     <Grid Grid.Row="2"
           ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto, Auto"
           Margin="8">
-      <Button Grid.Column="0" 
+      <Button Grid.Column="0"
               Name="ChannelConfigurationButton"
+              Content="Stereo"
               Command="{Binding ChannelConfigurationButtonPressedCommand}"
-              Margin="0, 0, 8, 0">Stereo</Button>
-      <Button Grid.Column="1">YouTube</Button>
+              Margin="0, 0, 8, 0"/>
+      <Button Grid.Column="1"
+              Name="YouTubeButton"
+              Content="YouTube"
+              Command="{Binding ChannelConfigurationButtonPressedCommand}"
+              Margin="0, 0, 8, 0">
+        <Button.Flyout>
+          <!--<Flyout FlyoutPresenterClasses="test" 
+                  Placement="TopEdgeAlignedLeft">
+            <Rectangle Fill="Orange" Height="20" Width="120"/>
+          </Flyout>-->
+          <!--<controls:MyFlyout FlyoutPresenterClasses="test"
+                  Placement="TopEdgeAlignedLeft">
+            <Rectangle Fill="Orange" Height="20" Width="120"/>
+          </controls:MyFlyout>-->
+        </Button.Flyout>
+      </Button>
       <Button Grid.Column="3" Margin="0, 0, 8, 0">10 SEC</Button>
       <Button Grid.Column="4" Margin="0, 0, 8, 0">CONTINUOUS</Button>
       <Rectangle Grid.Column="5" Fill="Orange" Width="30" Margin="0, 0, 8, 0"></Rectangle>
@@ -287,7 +308,7 @@
       <Button Grid.Column="7">Next</Button>
     </Grid>
 
-  </Grid>  
-  
-  
+  </Grid>
+
+
 </UserControl>
