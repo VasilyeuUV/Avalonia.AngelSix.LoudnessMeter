@@ -1,9 +1,15 @@
-﻿namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public partial class MainViewModel : ObservableObject
     {
-#pragma warning disable CA1822 // Mark members as static
-        public string Greeting => "Welcome to Avalonia!";
-#pragma warning restore CA1822 // Mark members as static
+        [ObservableProperty]
+        private string _boldTitle = "AVALONIA";
+
+
+        [ObservableProperty]
+        private string _regularTitle = "LOUDNESS METER";
+
     }
 }
