@@ -41,22 +41,6 @@
       <Setter Property="TextBlock.Foreground" Value="White"/>
     </Style>
 
-    <Style Selector="controls|AnimatedPopup.channel">
-      <Setter Property="Width" Value="0"/>
-      <Setter Property="Height" Value="0"/>
-      <Setter Property="Transitions">
-        <Transitions>
-          <DoubleTransition Property="Width" Duration="0:0:0.2" Easing="QuadraticEaseIn"/>
-          <DoubleTransition Property="Height" Duration="0:0:0.2" Easing="QuadraticEaseIn"/>
-        </Transitions>
-      </Setter>
-    </Style>
-
-    <Style Selector="controls|AnimatedPopup.channel.open">
-      <Setter Property="Width" Value="300"/>
-      <Setter Property="Height" Value="600"/>
-    </Style>
-
   </UserControl.Styles>
 
 
@@ -77,14 +61,23 @@
     <!--#######################################################################################################-->
     <!-- Channel Configuration Popup -->
     <controls:AnimatedPopup Grid.Row="0"
-            Name="ChannelConfigurationPopup"
-            Classes="channel"
-            Classes.open="{Binding IsOpenChannelConfigurationList}"
-            Grid.RowSpan="3"
-            Background="White"
-            Margin="9,0,0,9"
-            >
-      <Label Content="Hello!" Foreground="Red" Background="Black"/>
+                            Grid.RowSpan="3"
+                            Name="ChannelConfigurationPopup"
+                            >
+      <Border Padding="20"
+              Background="White"
+              BorderThickness="1"
+              BorderBrush="#ddd"
+              CornerRadius="5">
+        <StackPanel>
+          <Label Content="Hello!"/>
+          <Label Content="Hello!"/>
+          <Label Content="Hello!"/>
+          <Label Content="Hello!"/>
+          <Label Content="Hello!"/>
+          <Label Content="Hello!"/>
+        </StackPanel>
+      </Border>
     </controls:AnimatedPopup>
 
 
