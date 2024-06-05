@@ -59,10 +59,11 @@
 
 
     <!--#######################################################################################################-->
-    <!-- Channel Configuration Popup -->
-    <controls:AnimatedPopup Grid.Row="0"
-                            Grid.RowSpan="3"
+    <!-- Channel Configuration Popup WITH DIRECTPROPERTIES -->
+    <controls:AnimatedPopup Grid.Row="0" Grid.RowSpan="3"
                             Name="ChannelConfigurationPopup"
+                            IsOpen="False"
+                            AnimationTime="0.15"
                             >
       <Border Padding="20"
               Background="White"
@@ -110,7 +111,8 @@
         </Style>
       </Grid.Styles>
 
-      <Button Grid.Column="0">
+      <Button Grid.Column="0"
+              Command="{Binding #ChannelConfigurationPopup.BeginClose}">
         <Image Source="/Assets/Images/Monitor.png"/>
       </Button>
       <Button Grid.Column="1">
@@ -276,12 +278,12 @@
       <Button Grid.Column="0"
               Name="ChannelConfigurationButton"
               Content="Stereo"
-              Command="{Binding ChannelConfigurationButtonPressedCommand}"
+              Command="{Binding #ChannelConfigurationPopup.BeginOpen}"
               Margin="0, 0, 8, 0"/>
       <Button Grid.Column="1"
               Name="YouTubeButton"
               Content="YouTube"
-              Command="{Binding ChannelConfigurationButtonPressedCommand}"
+              Command="{Binding #ChannelConfigurationPopup.BeginOpen}"
               Margin="0, 0, 8, 0">
         <Button.Flyout>
           <!--<Flyout FlyoutPresenterClasses="test" 
