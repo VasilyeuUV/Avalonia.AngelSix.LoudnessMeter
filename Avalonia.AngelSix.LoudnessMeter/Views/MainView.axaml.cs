@@ -1,5 +1,6 @@
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -48,6 +49,15 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
                     _mainGrid.Bounds.Height - position.Y - _channelConfigButton.Bounds.Height);
             });
         }
+
+
+        protected override async void OnLoaded(RoutedEventArgs e)
+        {
+            await ((MainViewModel)DataContext).LoadSettingsCommand.ExecuteAsync(null);
+
+            base.OnLoaded(e);
+        }
+
 
         private void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
             => ((MainViewModel)DataContext).ChannelConfigurationButtonPressedCommand.Execute(null);

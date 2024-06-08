@@ -273,7 +273,7 @@
           Margin="8">
       <Button Grid.Column="0"
               Name="ChannelConfigurationButton"
-              Content="Stereo"
+              Content="{Binding ChannelConfigurationButtonText}"
               Command="{Binding #ChannelConfigurationPopup.BeginOpen}"
               Margin="0, 0, 8, 0"/>
       <Button Grid.Column="1"
