@@ -58,6 +58,13 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
             get => _isOpen;
             set
             {
+                // If the value has not changed...
+                if (value == _isOpen)
+                {
+                    // Do nothing
+                    return;
+                }
+
                 // If we are opening
                 if (value)
                 {
@@ -76,7 +83,20 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
                         }
 
                         // Insert the underlay control
-                        grid.Children.Insert(0, _underlayControl);
+                        if (!grid.Children.Contains(_underlayControl))
+                        {
+                            grid.Children.Insert(0, _underlayControl);
+                        }
+                    }
+                }
+                // If closing...
+                else
+                {
+                    // If the control is currently fully open...
+                    if (IsOpened)
+                    {
+                        // Update desired size
+                        UpdateDesiredSize();
                     }
                 }
 
@@ -85,6 +105,33 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
         }
 
         #endregion // IsOpen DirectProperty
+
+
+
+        //#########################################################################################################################
+        #region IsAnimateOpacity DirectProperty
+
+        private bool _isAnimateOpacity = true;
+
+        /// <summary>
+        /// IsAnimateOpacity DirectProperty definition
+        /// </summary>
+        public static readonly DirectProperty<AnimatedPopup, bool> IsAnimateOpacityProperty =
+            AvaloniaProperty.RegisterDirect<AnimatedPopup, bool>(nameof(IsAnimateOpacity),
+                o => o.IsAnimateOpacity,
+                (o, v) => o.IsAnimateOpacity = v);
+
+        /// <summary>
+        /// Gets or sets the IsAnimateOpacity property. This DirectProperty 
+        /// indicates ....
+        /// </summary>
+        public bool IsAnimateOpacity
+        {
+            get => _isAnimateOpacity;
+            set => SetAndRaise(IsAnimateOpacityProperty, ref _isAnimateOpacity, value);
+        }
+
+        #endregion // IsAnimateOpacity DirectProperty
 
 
 
@@ -185,8 +232,8 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
 
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    // Set the desired size
-                    _desiredSize = DesiredSize - Margin;
+                    // Update desired size
+                    UpdateDesiredSize();
 
                     // Update animation
                     UpdateAnimation();
@@ -303,6 +350,12 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
             Width = finalWidth;
             Height = finalHeight;
 
+            // Animate opacity
+            if (IsAnimateOpacity)
+            {
+                Opacity = _originalOpacity * easing.Ease(percentageAnimated);
+            }
+
             // Animate underlay
             _underlayControl.Opacity = _underlayOpacity * easing.Ease(percentageAnimated);
 
@@ -318,8 +371,11 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
             if (_isOpen)
             {
                 // Set Size to desired size
-                Width = _desiredSize.Width;
-                Height = _desiredSize.Height;
+                Width = double.NaN;
+                Height = double.NaN;
+
+                // Make shure opacity is set to original value
+                Opacity = _originalOpacity;
             }
             // If closed ...
             else
@@ -354,5 +410,13 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
             // Start the animation thread again
             _animationTimer.Start();
         }
+
+
+        /// <summary>
+        /// Update the animation desired size based on current visuals desired size
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        private void UpdateDesiredSize()
+            => _desiredSize = DesiredSize - Margin;
     }
 }
