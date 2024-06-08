@@ -49,21 +49,12 @@
   <Grid Name="MainGrid" RowDefinitions="Auto, *, Auto" Background="White">
 
     <!--#######################################################################################################-->
-    <!-- Channel Configuration Popup Closer -->
-    <Border Grid.Row="0" Grid.RowSpan="3"
-            Background="Transparent"
-            ZIndex="9"
-            PointerPressed="Border_PointerPressed"
-            IsVisible="{Binding IsOpenChannelConfigurationList}"
-            />
-
-
-    <!--#######################################################################################################-->
     <!-- Channel Configuration Popup WITH DIRECTPROPERTIES -->
     <controls:AnimatedPopup Grid.Row="0" Grid.RowSpan="3"
                             Name="ChannelConfigurationPopup"
                             IsOpen="False"
                             AnimationTime="0.15"
+                            UnderlayOpacity="0.3"
                             >
       <Border Padding="20"
               Background="White"

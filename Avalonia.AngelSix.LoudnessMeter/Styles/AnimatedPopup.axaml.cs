@@ -1,3 +1,5 @@
+using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -20,7 +22,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
         private Timer _sizingTimer;                                         // - The timeout timer to detect when auto sizing has finished firing
         private Size _desiredSize;                                          // - Store the control desired size
         private TimeSpan _frameRate = TimeSpan.FromSeconds(1 / 60.0);       // - Get a 60 FPS timespan
-
+        private Control _underlayControl;                                   // - The underlay control for closing this popup
 
         /// <summary>
         /// Calculate total ticks that make up the animation time
@@ -54,7 +56,32 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
         public bool IsOpen
         {
             get => _isOpen;
-            set => SetAndRaise(IsOpenProperty, ref _isOpen, value);
+            set
+            {
+                // If we are opening
+                if (value)
+                {
+                    // If the parent is a Grid...
+                    if (Parent is Grid grid)
+                    {
+                        // Set grid row/column span
+                        if (grid.RowDefinitions?.Count > 0)
+                        {
+                            _underlayControl.SetValue(Grid.RowSpanProperty, grid.RowDefinitions?.Count);
+                        }
+
+                        if (grid.ColumnDefinitions?.Count > 0)
+                        {
+                            _underlayControl.SetValue(Grid.ColumnSpanProperty, grid.ColumnDefinitions?.Count);
+                        }
+
+                        // Insert the underlay control
+                        grid.Children.Insert(0, _underlayControl);
+                    }
+                }
+
+                SetAndRaise(IsOpenProperty, ref _isOpen, value);
+            }
         }
 
         #endregion // IsOpen DirectProperty
@@ -87,11 +114,50 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
         #endregion // AnimationTime DirectProperty
 
 
+
+        //#########################################################################################################################
+        #region UnderlayOpacity DirectProperty
+
+        private double _underlayOpacity = 0.2;
+
+        /// <summary>
+        /// UnderlayOpacity DirectProperty definition
+        /// </summary>
+        public static readonly DirectProperty<AnimatedPopup, double> UnderlayOpacityProperty =
+            AvaloniaProperty.RegisterDirect<AnimatedPopup, double>(nameof(UnderlayOpacity),
+                o => o.UnderlayOpacity,
+                (o, v) => o.UnderlayOpacity = v);
+
+        /// <summary>
+        /// Gets or sets the UnderlayOpacity property. This DirectProperty 
+        /// indicates underlay opacity.
+        /// </summary>
+        public double UnderlayOpacity
+        {
+            get => _underlayOpacity;
+            set => SetAndRaise(UnderlayOpacityProperty, ref _underlayOpacity, value);
+        }
+
+        #endregion // UnderlayOpacity DirectProperty
+
+
+
         /// <summary>
         /// CTOR
         /// </summary>
         public AnimatedPopup()
         {
+            // Make a new underlay control
+            _underlayControl = new Border
+            {
+                Background = Brushes.Black,
+                Opacity = 0,
+                ZIndex = 9,
+            };
+
+            // On press, close popup
+            _underlayControl.PointerPressed += (s, a) => BeginClose();
+
             // Remember original controls opacity
             _originalOpacity = Opacity;
 
@@ -182,7 +248,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
             {
                 // Clear the flag
                 _isFirstAnimation = false;
-                
+
                 // Stop this animation timer
                 _animationTimer.Stop();
 
@@ -190,8 +256,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
                 Opacity = _originalOpacity;
 
                 // Set the final size
-                Width = _isOpen ? _desiredSize.Width : 0;
-                Height = _isOpen ? _desiredSize.Height : 0;
+                AnimationComplete();
 
                 // Do on this tick
                 return;
@@ -208,8 +273,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
                 _animationTimer.Stop();
 
                 // Set the final size
-                Width = _isOpen ? _desiredSize.Width : 0;
-                Height = _isOpen ? _desiredSize.Height : 0;
+                AnimationComplete();
 
                 // Clear animating flag
                 _isAnimating = false;
@@ -239,7 +303,42 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
             Width = finalWidth;
             Height = finalHeight;
 
+            // Animate underlay
+            _underlayControl.Opacity = _underlayOpacity * easing.Ease(percentageAnimated);
+
             Console.WriteLine($"Timer tick {_animationCurrentTick}");
+        }
+
+        /// <summary>
+        /// Should be callsed, when an open or close transition has complete
+        /// </summary>
+        private void AnimationComplete()
+        {
+            // If open ...
+            if (_isOpen)
+            {
+                // Set Size to desired size
+                Width = _desiredSize.Width;
+                Height = _desiredSize.Height;
+            }
+            // If closed ...
+            else
+            {
+                // Set Size to 0
+                Width = 0;
+                Height = 0;
+
+                // If the parent is a Grid...
+                if (Parent is Grid grid
+                    && grid.Children.Contains(_underlayControl))
+                {
+                    //// Reset opacity
+                    //_underlayControl.Opacity = 0;
+
+                    // Remove the underlay
+                    grid.Children.Remove(_underlayControl);
+                }
+            }
         }
 
 
