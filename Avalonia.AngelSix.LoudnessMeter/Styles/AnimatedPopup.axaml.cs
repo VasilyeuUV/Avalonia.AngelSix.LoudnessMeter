@@ -65,28 +65,31 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
                     return;
                 }
 
-                // If we are opening
+                // If we are opening...
                 if (value)
                 {
                     // If the parent is a Grid...
                     if (Parent is Grid grid)
                     {
-                        // Set grid row/column span
-                        if (grid.RowDefinitions?.Count > 0)
+                        Dispatcher.UIThread.InvokeAsync(() =>
                         {
-                            _underlayControl.SetValue(Grid.RowSpanProperty, grid.RowDefinitions?.Count);
-                        }
+                            // Set grid row/column span
+                            if (grid.RowDefinitions?.Count > 0)
+                            {
+                                _underlayControl.SetValue(Grid.RowSpanProperty, grid.RowDefinitions?.Count);
+                            }
 
-                        if (grid.ColumnDefinitions?.Count > 0)
-                        {
-                            _underlayControl.SetValue(Grid.ColumnSpanProperty, grid.ColumnDefinitions?.Count);
-                        }
+                            if (grid.ColumnDefinitions?.Count > 0)
+                            {
+                                _underlayControl.SetValue(Grid.ColumnSpanProperty, grid.ColumnDefinitions?.Count);
+                            }
 
-                        // Insert the underlay control
-                        if (!grid.Children.Contains(_underlayControl))
-                        {
-                            grid.Children.Insert(0, _underlayControl);
-                        }
+                            // Insert the underlay control
+                            if (!grid.Children.Contains(_underlayControl))
+                            {
+                                grid.Children.Insert(0, _underlayControl);
+                            }
+                        });
                     }
                 }
                 // If closing...
@@ -386,11 +389,17 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
                 if (Parent is Grid grid
                     && grid.Children.Contains(_underlayControl))
                 {
-                    //// Reset opacity
-                    //_underlayControl.Opacity = 0;
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        // Reset opacity
+                        _underlayControl.Opacity = 0;
 
-                    // Remove the underlay
-                    grid.Children.Remove(_underlayControl);
+                        // Remove underlay
+                        if (grid.Children.Contains(_underlayControl))
+                        {
+                            grid.Children.Remove(_underlayControl);
+                        }
+                    });
                 }
             }
         }

@@ -1,6 +1,6 @@
 ﻿namespace Avalonia.AngelSix.LoudnessMeter.DataModels;
 
 /// <summary>
-/// Information about channel configuration
+/// Information about a channel configuration
 /// </summary>
-public record ChannelConfigurationItem (string Group, string Text, string ShortText);
+public record ChannelConfigurationItem(string Group, string Text, string ShortText);

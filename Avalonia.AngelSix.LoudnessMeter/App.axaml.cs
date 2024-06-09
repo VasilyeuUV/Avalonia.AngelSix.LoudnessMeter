@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.AngelSix.LoudnessMeter.Services;
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.AngelSix.LoudnessMeter.Views;

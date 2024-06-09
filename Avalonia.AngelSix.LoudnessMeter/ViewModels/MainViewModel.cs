@@ -16,17 +16,10 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         //#############################################################################################
         #region ObservableProperties
 
-        [ObservableProperty]
-        private string _boldTitle = "AVALONIA";
-
-        [ObservableProperty]
-        private string _regularTitle = "LOUDNESS METER";
-
-        [ObservableProperty]
-        private bool _isOpenChannelConfigurationList = false;
-
-        [ObservableProperty]
-        private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default!;
+        [ObservableProperty] private string _boldTitle = "AVALONIA";
+        [ObservableProperty] private string _regularTitle = "LOUDNESS METER";
+        [ObservableProperty] private bool _isOpenChannelConfigurationList = true;
+        [ObservableProperty] private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default!;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ChannelConfigurationButtonText))]          // - уведомлять указанное свойство при изменении
@@ -93,7 +86,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
             var channelConfigurations = await _audioInterfaceService.GetChannelConfigurationsAsync();
 
             // Create a grouping from the flat data
-            ChannelConfigurations 
+            ChannelConfigurations
                 = new ObservableGroupedCollection<string, ChannelConfigurationItem>(channelConfigurations.GroupBy(item => item.Group));
         }
 

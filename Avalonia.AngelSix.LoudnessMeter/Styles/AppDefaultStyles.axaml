@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
   <Design.PreviewWith>
-    <Border Padding="20" Background="{DynamicResource White}">
+    <Border Background="{DynamicResource White}">
       <StackPanel Margin="50">
         <Label Content="My Title"/>
       </StackPanel>
@@ -12,4 +13,14 @@
   <Style Selector="Label">
     <Setter Property="Foreground" Value="Black"/>
   </Style>
+
+  <Style Selector="Expander.small">
+    <Setter Property="Theme" Value="{DynamicResource SmallExpander}"/>
+  </Style>
+
+  <Style Selector="Button">
+    <Setter Property="Background" Value="#ddd"></Setter>
+    <Setter Property="Foreground" Value="Black"></Setter>
+  </Style>  
+  
 </Styles>
