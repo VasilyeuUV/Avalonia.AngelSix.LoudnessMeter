@@ -10,10 +10,10 @@ public class DummyAudioInterfaceService : IAudioInterfaceService
     public Task<List<ChannelConfigurationItem>> GetChannelConfigurationsAsync()
         => Task.FromResult(new List<ChannelConfigurationItem>(new[]
         {
-            new ChannelConfigurationItem(Group: "Momo Stereo Configuration", LongText: "Mono", ShortText: "Mono"),
-            new ChannelConfigurationItem(Group: "Momo Stereo Configuration", LongText: "Stereo", ShortText: "Stereo"),
-            new ChannelConfigurationItem(Group: "5.1 Surround", LongText: "5.1 DTS - (L, R, Ls, Rs, C, LFE)", ShortText: "5.1 DTS"),
-            new ChannelConfigurationItem(Group: "5.1 Surround", LongText: "5.1 DTS - (L, R, C, LFE, Ls, Rs)", ShortText: "5.1 ITU"),
-            new ChannelConfigurationItem(Group: "5.1 Surround", LongText: "5.1 DTS - (L, R, Ls, Rs, C, LFE)", ShortText: "5.1 FILM"),
+            new ChannelConfigurationItem(Group: "Mono Stereo Configuration", Text: "Mono", ShortText: "Mono"),
+            new ChannelConfigurationItem(Group: "Mono Stereo Configuration", Text: "Stereo", ShortText: "Stereo"),
+            new ChannelConfigurationItem(Group: "5.1 Surround", Text: "5.1 DTS - (L, R, Ls, Rs, C, LFE)", ShortText: "5.1 DTS"),
+            new ChannelConfigurationItem(Group: "5.1 Surround", Text: "5.1 DTS - (L, R, C, LFE, Ls, Rs)", ShortText: "5.1 ITU"),
+            new ChannelConfigurationItem(Group: "5.1 Surround", Text: "5.1 DTS - (L, R, Ls, Rs, C, LFE)", ShortText: "5.1 FILM"),
         }));
 }

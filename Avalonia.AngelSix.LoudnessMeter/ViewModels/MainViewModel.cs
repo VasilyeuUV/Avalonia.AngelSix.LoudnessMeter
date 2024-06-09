@@ -26,7 +26,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         private bool _isOpenChannelConfigurationList = false;
 
         [ObservableProperty]
-        private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default;
+        private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default!;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ChannelConfigurationButtonText))]          // - уведомлять указанное свойство при изменении
@@ -35,7 +35,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         #endregion // ObservableProperties
 
 
-        public string ChannelConfigurationButtonText => SelectedChannelConfiguration?.ShortText ?? "Select channel";
+        public string ChannelConfigurationButtonText => SelectedChannelConfiguration?.ShortText ?? "Select Channel";
 
 
 
@@ -49,8 +49,6 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         {
             _audioInterfaceService = new DummyAudioInterfaceService();
         }
-
-
 
 
         /// <summary>

@@ -100,6 +100,10 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
                     }
                 }
 
+                // Update animation
+                UpdateAnimation();
+
+                // Raise the property changed event
                 SetAndRaise(IsOpenProperty, ref _isOpen, value);
             }
         }
@@ -257,9 +261,6 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
         public void BeginOpen()
         {
             IsOpen = true;
-
-            // Update animation
-            UpdateAnimation();
         }
 
 
@@ -267,9 +268,6 @@ namespace Avalonia.AngelSix.LoudnessMeter.Styles
         public void BeginClose()
         {
             IsOpen = false;
-
-            // Update animation
-            UpdateAnimation();
         }
 
         #endregion // Commands

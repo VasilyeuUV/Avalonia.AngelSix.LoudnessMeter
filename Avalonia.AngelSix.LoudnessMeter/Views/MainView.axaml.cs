@@ -12,6 +12,11 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         private Control _channelConfigPopup;
         private Control _channelConfigButton;
 
+        /// <summary>
+        /// The main view model of this view
+        /// </summary>
+        private MainViewModel _mainViewModel => (MainViewModel)DataContext!;
+
 
         public MainView()
         {
@@ -35,31 +40,34 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         {
             base.Render(context);
 
-            // Get relative position of button, in relation to main grid
-            var position = _channelConfigButton.TranslatePoint(new Point(), _mainGrid)
-                ?? throw new System.Exception("Cannot get TranslatePoint from Configuration Button");
-
-            // Set margin of popup so it appears bottom left of button
-            Dispatcher.UIThread.Post(() =>
+            Dispatcher.UIThread.InvokeAsync(() =>
             {
-                _channelConfigPopup.Margin = new Thickness(
-                    position.X,
-                    0,
-                    0,
-                    _mainGrid.Bounds.Height - position.Y - _channelConfigButton.Bounds.Height);
+                // Get relative position of button, in relation to main grid
+                var position = _channelConfigButton.TranslatePoint(new Point(), _mainGrid)
+                    ?? throw new System.Exception("Cannot get TranslatePoint from Configuration Button");
+
+                // Set margin of popup so it appears bottom left of button
+                Dispatcher.UIThread.Post(() =>
+                {
+                    _channelConfigPopup.Margin = new Thickness(
+                        position.X,
+                        0,
+                        0,
+                        _mainGrid.Bounds.Height - position.Y - _channelConfigButton.Bounds.Height);
+                });
             });
         }
 
 
         protected override async void OnLoaded(RoutedEventArgs e)
         {
-            await ((MainViewModel)DataContext).LoadSettingsCommand.ExecuteAsync(null);
+            await _mainViewModel.LoadSettingsCommand.ExecuteAsync(null);
 
             base.OnLoaded(e);
         }
 
 
-        private void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
-            => ((MainViewModel)DataContext).ChannelConfigurationButtonPressedCommand.Execute(null);
+        private void Border_PointerPressed(object? sender, Input.PointerPressedEventArgs e)
+            => _mainViewModel.ChannelConfigurationButtonPressedCommand.Execute(null);
     }
 }
