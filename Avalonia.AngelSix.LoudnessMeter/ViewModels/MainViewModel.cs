@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.AngelSix.LoudnessMeter.DataModels;
 using Avalonia.AngelSix.LoudnessMeter.Services;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,14 +14,16 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
     {
         private IAudioInterfaceService _audioInterfaceService;
 
-
         //#############################################################################################
         #region ObservableProperties
 
         [ObservableProperty] private string _boldTitle = "AVALONIA";
         [ObservableProperty] private string _regularTitle = "LOUDNESS METER";
-        [ObservableProperty] private bool _isOpenChannelConfigurationList = true;
+        [ObservableProperty] private bool _isOpenChannelConfigurationList = false;
         [ObservableProperty] private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default!;
+
+        [ObservableProperty] private double _volumePercentPosition;
+        [ObservableProperty] private double _volumeContainerSize;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ChannelConfigurationButtonText))]          // - уведомлять указанное свойство при изменении
@@ -41,6 +45,8 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         public MainViewModel()
         {
             _audioInterfaceService = new DummyAudioInterfaceService();
+
+            Initialize();
         }
 
 
@@ -55,6 +61,8 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
             //}
 
             _audioInterfaceService = audioInterfaceService;
+
+            Initialize();
         }
 
         #endregion
@@ -91,5 +99,38 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         }
 
         #endregion // Commands
+
+
+
+        //#############################################################################################
+        #region PRIVATE METHODS
+
+        private void Initialize()
+        {
+            // Temp code to move volume position 
+
+            var tick = 0;
+            var input = 0.0;
+
+            var tempTimer = new DispatcherTimer
+            {
+                Interval = System.TimeSpan.FromSeconds(1 / 60.0),
+            };
+
+            tempTimer.Tick += (s, e) =>
+            {
+                // Slow down ticks
+                input = ++tick / 20f;
+
+                // Scale value
+                var scale = VolumeContainerSize / 2f;
+
+                VolumePercentPosition = (Math.Sin(input) + 1) * scale;
+            };
+
+            tempTimer.Start();
+        }
+
+        #endregion // PRIVATE METHODS
     }
 }

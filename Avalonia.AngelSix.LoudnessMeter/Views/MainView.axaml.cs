@@ -1,3 +1,4 @@
+using System.Threading;
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -11,6 +12,10 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         private Control _mainGrid;
         private Control _channelConfigPopup;
         private Control _channelConfigButton;
+        private Control _volumeContainer;
+
+        private Timer _sizingTimer;                                         // - The timeout timer to detect when auto sizing has finished firing
+
 
         /// <summary>
         /// The main view model of this view
@@ -22,13 +27,25 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         {
             InitializeComponent();
 
+            _sizingTimer = new Timer(t =>
+            {
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    // Update desired size
+                    UpdateSizes();
+                });
+            });
+
             _mainGrid = this.FindControl<Control>("MainGrid")
                 ?? throw new System.Exception("Cannot find Main Grid by name");
             _channelConfigButton = this.FindControl<Control>("ChannelConfigurationButton")
                 ?? throw new System.Exception("Cannot find Channel Configuration Button by name");
             _channelConfigPopup = this.FindControl<Control>("ChannelConfigurationPopup")
                 ?? throw new System.Exception("Cannot find Channel Configuration Popup by name");
+            _volumeContainer = this.FindControl<Control>("VolumeContainer")
+                ?? throw new System.Exception("Cannot find Channel Volume Container by name");
         }
+
 
         /// <summary>
         /// ÏÅÐÅÐÈÑÎÂÊÀ ÑÒÀÐÒÎÂÎÃÎ ÏÎËÎÆÅÍÈß POPUP ÄËß ÊÍÎÏÊÈ ÏÐÈ ÈÇÌÅÍÅÍÈÈ ÐÀÇÌÅÐÀ ÎÊÍÀ.
@@ -39,6 +56,8 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         public override void Render(DrawingContext context)
         {
             base.Render(context);
+
+            _sizingTimer.Change(100, int.MaxValue);
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -69,5 +88,11 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
 
         private void Border_PointerPressed(object? sender, Input.PointerPressedEventArgs e)
             => _mainViewModel.ChannelConfigurationButtonPressedCommand.Execute(null);
+
+
+        private void UpdateSizes()
+        {
+            ((MainViewModel)DataContext).VolumeContainerSize = _volumeContainer.Bounds.Height;
+        }
     }
 }
