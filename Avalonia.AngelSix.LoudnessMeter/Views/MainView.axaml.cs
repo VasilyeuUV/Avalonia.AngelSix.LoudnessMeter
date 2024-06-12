@@ -1,9 +1,15 @@
+using System;
+using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.AngelSix.LoudnessMeter.Services;
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using ManagedBass;
+using static Avalonia.AngelSix.LoudnessMeter.Services.AudioCaptureService;
 
 namespace Avalonia.AngelSix.LoudnessMeter.Views
 {
@@ -15,7 +21,6 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         private Control _volumeContainer;
 
         private Timer _sizingTimer;                                         // - The timeout timer to detect when auto sizing has finished firing
-
 
         /// <summary>
         /// The main view model of this view
@@ -81,6 +86,36 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         protected override async void OnLoaded(RoutedEventArgs e)
         {
             await _mainViewModel.LoadSettingsCommand.ExecuteAsync(null);
+
+            Task.Run(async () =>
+            {
+                // Output all devices, then select one
+                var deviceList = RecordingDevice.Enumerate();
+                foreach (var device in deviceList)
+                {
+                    System.Diagnostics.Debug.WriteLine($"{device?.Index}: {device?.Name}");
+                }
+
+                var outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Audio\\");
+                Directory.CreateDirectory(outputPath);
+                var filePath = Path.Combine(outputPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "wav");
+                using var writer = new WaveFileWriter(new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read), new WaveFormat());
+
+                using var captureDevice = new AudioCaptureService(0);
+                captureDevice.DataAvailable += (buffer, length) =>
+                {
+                    writer.Write(buffer, length);
+                    //System.Diagnostics.Debug.WriteLine(BitConverter.ToString(buffer));
+                };
+                captureDevice.Start();
+
+                await Task.Delay(5000);
+
+                captureDevice.Stop();
+
+                await Task.Delay(100);
+
+            });
 
             base.OnLoaded(e);
         }
