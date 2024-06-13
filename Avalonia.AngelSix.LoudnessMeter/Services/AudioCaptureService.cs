@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using HarfBuzzSharp;
 using ManagedBass;
@@ -23,14 +24,26 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
         /// CTOR
         /// </summary>
         /// <param name="device"></param>
-        public AudioCaptureService(int deviceId)
+        public AudioCaptureService(int deviceId, int frequency = 44100)
         {
             _device = deviceId;
 
             Bass.Init();
             Bass.RecordInit(_device);
 
-            _handle = Bass.RecordStart(44100, 2, BassFlags.RecordPause, Procedure);
+            _handle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, Procedure);
+
+            //// Output all devices, then select one
+            //var deviceList = RecordingDevice.Enumerate();
+            //foreach (var device in deviceList)
+            //{
+            //    System.Diagnostics.Debug.WriteLine($"{device?.Index}: {device?.Name}");
+            //}
+
+            //var outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Audio\\");
+            //Directory.CreateDirectory(outputPath);
+            //var filePath = Path.Combine(outputPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "wav");
+            //using var writer = new WaveFileWriter(new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read), new WaveFormat());
         }
 
 

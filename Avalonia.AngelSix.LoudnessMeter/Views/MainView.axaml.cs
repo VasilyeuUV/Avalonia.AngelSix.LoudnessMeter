@@ -1,33 +1,43 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.AngelSix.LoudnessMeter.Services;
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
-using ManagedBass;
-using static Avalonia.AngelSix.LoudnessMeter.Services.AudioCaptureService;
+using NWaves.Signals;
+using NWaves.Utils;
 
 namespace Avalonia.AngelSix.LoudnessMeter.Views
 {
     public partial class MainView : UserControl
     {
+        private int _captureFrequency = 44100;
+
         private Control _mainGrid;
         private Control _channelConfigPopup;
         private Control _channelConfigButton;
         private Control _volumeContainer;
 
         private Timer _sizingTimer;                                         // - The timeout timer to detect when auto sizing has finished firing
+        private AudioCaptureService _captureDevice;
+
+        private Queue<double> _lufs = new();
+
 
         /// <summary>
         /// The main view model of this view
         /// </summary>
-        private MainViewModel _mainViewModel => (MainViewModel)DataContext!;
+        private MainViewModel _MainViewModel => (MainViewModel)DataContext!;
 
 
+        /// <summary>
+        /// CTOR
+        /// </summary>
+        /// <exception cref="System.Exception"></exception>
         public MainView()
         {
             InitializeComponent();
@@ -85,49 +95,68 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
 
         protected override async void OnLoaded(RoutedEventArgs e)
         {
-            await _mainViewModel.LoadSettingsCommand.ExecuteAsync(null);
+            await _MainViewModel.LoadSettingsCommand.ExecuteAsync(null);
 
-            Task.Run(async () =>
-            {
-                // Output all devices, then select one
-                var deviceList = RecordingDevice.Enumerate();
-                foreach (var device in deviceList)
-                {
-                    System.Diagnostics.Debug.WriteLine($"{device?.Index}: {device?.Name}");
-                }
-
-                var outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Audio\\");
-                Directory.CreateDirectory(outputPath);
-                var filePath = Path.Combine(outputPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "wav");
-                using var writer = new WaveFileWriter(new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read), new WaveFormat());
-
-                using var captureDevice = new AudioCaptureService(0);
-                captureDevice.DataAvailable += (buffer, length) =>
-                {
-                    writer.Write(buffer, length);
-                    //System.Diagnostics.Debug.WriteLine(BitConverter.ToString(buffer));
-                };
-                captureDevice.Start();
-
-                await Task.Delay(5000);
-
-                captureDevice.Stop();
-
-                await Task.Delay(100);
-
-            });
+            StartCapture(1);
 
             base.OnLoaded(e);
         }
 
 
+        private void StartCapture(int deviceId)
+        {
+            _captureDevice = new AudioCaptureService(deviceId, _captureFrequency);
+            _captureDevice.DataAvailable += (buffer, length) =>
+            {
+                CalculateValues(buffer);
+            };
+            _captureDevice.Start();
+        }
+
+
+        private void CalculateValues(byte[] buffer)
+        {
+            //System.Diagnostics.Debug.WriteLine(BitConverter.ToString(buffer));
+
+            // Get total PCM16 samples in this buffer (16 bits per sample)
+            var sampleCount = buffer.Length / 2;
+
+            // Create our Discrete Signal ready to the filled with information
+            var signal = new DiscreteSignal(_captureFrequency, sampleCount);
+
+            // Loop all bytes and extract the 16 bits into signal floats
+            using var reader = new BinaryReader(new MemoryStream(buffer));
+
+            for (int i = 0; i < sampleCount; i++)
+            {
+                signal[i] = reader.ReadInt16() / 32768f;
+            }
+
+            // Calcilate te LUFS
+            var lufs = Scale.ToDecibel(signal.Rms());
+            _lufs.Enqueue(lufs);
+
+            if (_lufs.Count > 15)
+            {
+                _lufs.Dequeue();
+            }
+
+            var averageLufs = _lufs.Average();
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _MainViewModel.ShortTermLoudness = $"{averageLufs:0.0} LUFS";
+            });
+        }
+
+
         private void Border_PointerPressed(object? sender, Input.PointerPressedEventArgs e)
-            => _mainViewModel.ChannelConfigurationButtonPressedCommand.Execute(null);
+            => _MainViewModel.ChannelConfigurationButtonPressedCommand.Execute(null);
 
 
         private void UpdateSizes()
         {
-            ((MainViewModel)DataContext).VolumeContainerSize = _volumeContainer.Bounds.Height;
+            _MainViewModel.VolumeContainerSize = _volumeContainer.Bounds.Height;
         }
     }
 }

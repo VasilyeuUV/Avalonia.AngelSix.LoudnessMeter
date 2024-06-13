@@ -19,11 +19,13 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
 
         [ObservableProperty] private string _boldTitle = "AVALONIA";
         [ObservableProperty] private string _regularTitle = "LOUDNESS METER";
+        [ObservableProperty] private string _shortTermLoudness = "-21.1 LUFS";
         [ObservableProperty] private bool _isOpenChannelConfigurationList = false;
         [ObservableProperty] private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default!;
 
         [ObservableProperty] private double _volumePercentPosition;
         [ObservableProperty] private double _volumeContainerSize;
+
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ChannelConfigurationButtonText))]          // - уведомлять указанное свойство при изменении
