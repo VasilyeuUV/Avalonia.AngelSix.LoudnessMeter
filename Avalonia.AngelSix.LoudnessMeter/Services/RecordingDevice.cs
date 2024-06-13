@@ -4,7 +4,7 @@ using ManagedBass;
 
 namespace Avalonia.AngelSix.LoudnessMeter.Services
 {
-    public partial class AudioCaptureService
+    public partial class BassAudioCaptureService
     {
         public class RecordingDevice : IDisposable
         {

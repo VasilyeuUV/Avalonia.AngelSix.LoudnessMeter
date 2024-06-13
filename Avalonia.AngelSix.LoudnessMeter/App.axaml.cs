@@ -16,7 +16,7 @@ namespace Avalonia.AngelSix.LoudnessMeter
         public override void OnFrameworkInitializationCompleted()
         {
             // Initialize the dependencies
-            var audioInterface = new DummyAudioInterfaceService();
+            var audioInterface = new BassAudioCaptureService();
             var mainViewModel = new MainViewModel(audioInterface);
 
 

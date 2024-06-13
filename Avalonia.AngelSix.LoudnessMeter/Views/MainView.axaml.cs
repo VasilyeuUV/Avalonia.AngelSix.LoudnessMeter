@@ -1,21 +1,14 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading;
-using Avalonia.AngelSix.LoudnessMeter.Services;
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
-using NWaves.Signals;
-using NWaves.Utils;
 
 namespace Avalonia.AngelSix.LoudnessMeter.Views
 {
     public partial class MainView : UserControl
     {
-        private int _captureFrequency = 44100;
 
         private Control _mainGrid;
         private Control _channelConfigPopup;
@@ -23,10 +16,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         private Control _volumeContainer;
 
         private Timer _sizingTimer;                                         // - The timeout timer to detect when auto sizing has finished firing
-        private AudioCaptureService _captureDevice;
-
-        private Queue<double> _lufs = new();
-
+        
 
         /// <summary>
         /// The main view model of this view
@@ -93,60 +83,15 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         }
 
 
+        /// <summary>
+        /// Run on-load initialization code
+        /// </summary>
+        /// <param name="e"></param>
         protected override async void OnLoaded(RoutedEventArgs e)
         {
-            await _MainViewModel.LoadSettingsCommand.ExecuteAsync(null);
-
-            StartCapture(1);
+            await _MainViewModel.LoadCommand.ExecuteAsync(null);
 
             base.OnLoaded(e);
-        }
-
-
-        private void StartCapture(int deviceId)
-        {
-            _captureDevice = new AudioCaptureService(deviceId, _captureFrequency);
-            _captureDevice.DataAvailable += (buffer, length) =>
-            {
-                CalculateValues(buffer);
-            };
-            _captureDevice.Start();
-        }
-
-
-        private void CalculateValues(byte[] buffer)
-        {
-            //System.Diagnostics.Debug.WriteLine(BitConverter.ToString(buffer));
-
-            // Get total PCM16 samples in this buffer (16 bits per sample)
-            var sampleCount = buffer.Length / 2;
-
-            // Create our Discrete Signal ready to the filled with information
-            var signal = new DiscreteSignal(_captureFrequency, sampleCount);
-
-            // Loop all bytes and extract the 16 bits into signal floats
-            using var reader = new BinaryReader(new MemoryStream(buffer));
-
-            for (int i = 0; i < sampleCount; i++)
-            {
-                signal[i] = reader.ReadInt16() / 32768f;
-            }
-
-            // Calcilate te LUFS
-            var lufs = Scale.ToDecibel(signal.Rms());
-            _lufs.Enqueue(lufs);
-
-            if (_lufs.Count > 15)
-            {
-                _lufs.Dequeue();
-            }
-
-            var averageLufs = _lufs.Average();
-
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                _MainViewModel.ShortTermLoudness = $"{averageLufs:0.0} LUFS";
-            });
         }
 
 
@@ -154,9 +99,10 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
             => _MainViewModel.ChannelConfigurationButtonPressedCommand.Execute(null);
 
 
-        private void UpdateSizes()
-        {
-            _MainViewModel.VolumeContainerSize = _volumeContainer.Bounds.Height;
-        }
+        /// <summary>
+        /// Update the application window/control sizes dynamically
+        /// </summary>
+        private void UpdateSizes() 
+            => _MainViewModel.VolumeContainerSize = _volumeContainer.Bounds.Height;
     }
 }
