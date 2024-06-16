@@ -260,17 +260,24 @@
           <Label Grid.Column="0" Grid.Row="10"></Label>
 
           <!-- Volume bar -->
-          <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="11"
+          <Grid Name="VolumeBar" 
+                Grid.Column="1" Grid.Row="0" Grid.RowSpan="11"
                 RowDefinitions="23*,37*"
                 Width="20">
             <Rectangle Grid.Row="0"
                        Margin="0,8,0,-8"
                        Fill="#b05c4e"
-                       Width="20"></Rectangle>
+                       Width="20"/>
             <Rectangle Grid.Row="1"
                        Margin="0,8,0,0"
                        Fill="White"
-                       Width="20"></Rectangle>
+                       Width="20"/>
+            <Rectangle Grid.Row="0" Grid.RowSpan="2"
+                       Height="{Binding VolumeBarMaskHeight}"
+                       VerticalAlignment="Top"
+                       Margin="0,8,0,0"
+                       Fill="{DynamicResource DarkBlueBrush}"
+                       Width="20"/>            
             <Canvas>
             </Canvas>
           </Grid>

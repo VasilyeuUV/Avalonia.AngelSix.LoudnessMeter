@@ -1,7 +1,5 @@
-﻿using Avalonia;
+﻿using System;
 using Avalonia.ReactiveUI;
-using Avalonia.Svg.Skia;
-using System;
 
 namespace Avalonia.AngelSix.LoudnessMeter.Desktop
 {

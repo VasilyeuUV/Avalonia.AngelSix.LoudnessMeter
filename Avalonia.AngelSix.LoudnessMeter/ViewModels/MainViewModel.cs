@@ -13,7 +13,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
     public partial class MainViewModel : ObservableObject
     {
         private IAudioCaptureService _audioCaptureService;                          // - the audio capture service
-
+        private int _upgradeCoubter = 3;                                            // - A slow tick counter to upgrade the text slower then the graphs and bars
 
         //#############################################################################################
         #region ObservableProperties
@@ -32,7 +32,9 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         [ObservableProperty] private ObservableGroupedCollection<string, ChannelConfigurationItem> _channelConfigurations = default!;
 
         [ObservableProperty] private double _volumePercentPosition;
-        [ObservableProperty] private double _volumeContainerSize;
+        [ObservableProperty] private double _volumeContainerHeight;
+        [ObservableProperty] private double _volumeBarHeight;
+        [ObservableProperty] private double _volumeBarMaskHeight;
 
 
         [ObservableProperty]
@@ -123,28 +125,30 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
 
         private void Initialize()
         {
-            // Temp code to move volume position 
 
-            var tick = 0;
-            var input = 0.0;
 
-            var tempTimer = new DispatcherTimer
-            {
-                Interval = System.TimeSpan.FromSeconds(1 / 60.0),
-            };
+            //// Temp code to move volume position 
 
-            tempTimer.Tick += (s, e) =>
-            {
-                // Slow down ticks
-                input = ++tick / 20f;
+            //var tick = 0;
+            //var input = 0.0;
 
-                // Scale value
-                var scale = VolumeContainerSize / 2f;
+            //var tempTimer = new DispatcherTimer
+            //{
+            //    Interval = System.TimeSpan.FromSeconds(1 / 60.0),
+            //};
 
-                VolumePercentPosition = (Math.Sin(input) + 1) * scale;
-            };
+            //tempTimer.Tick += (s, e) =>
+            //{
+            //    // Slow down ticks
+            //    input = ++tick / 20f;
 
-            tempTimer.Start();
+            //    // Scale value
+            //    var scale = VolumeContainerHeight / 2f;
+
+            //    VolumePercentPosition = (Math.Sin(input) + 1) * scale;
+            //};
+
+            //tempTimer.Start();
         }
 
 
@@ -154,23 +158,41 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         /// <param name="deviceId">The device ID</param>
         private void StartCapture(int deviceId)
         {
-            _audioCaptureService = new BassAudioCaptureService(deviceId);
+            _audioCaptureService = new BassAudioCaptureService(/*deviceId*/);
 
             // Listen out for chunk of information
             _audioCaptureService.AudioChunkAvailable += audioChunkData =>
             {
-                ShortTermLoudness = $"{audioChunkData.ShortTermLufs:0.0} LUFS";
-                IntegratedLoudness = $"{audioChunkData.IntegratedLufs:0.0} LUFS";
-                LoudnessRange = $"{audioChunkData.LoudnessRange:0.0} LU";
-                RealTimeDynamics = $"{audioChunkData.RealTimeDynamics:0.0} LU";
-                AverageDynamics = $"{audioChunkData.AverageRealTimeDynamics:0.0} LU";
-                MomentaryMaxLoudness = $"{audioChunkData.MomentaryMaxLufs:0.0} LUFS";
-                ShortTermMaxLoudness = $"{audioChunkData.ShortTermMaxLufs:0.0} LUFS";
-                TruePeakMax = $"{audioChunkData.TruePeakMax:0.0} dB";
+                ProcessAudioChunk(audioChunkData);
             };
 
             // Start capturing
             _audioCaptureService.Start();
+        }
+
+        private void ProcessAudioChunk(AudioChunkData audioChunkData)
+        {
+            // Counter between 0-1-2
+            _upgradeCoubter = (_upgradeCoubter + 1) % 3;
+
+            // Every time counter is at 0...
+            if (_upgradeCoubter == 0)
+            {
+                ShortTermLoudness = $"{Math.Max(-60, audioChunkData.ShortTermLufs):0.0} LUFS";
+                IntegratedLoudness = $"{Math.Max(-60, audioChunkData.IntegratedLufs):0.0} LUFS";
+                LoudnessRange = $"{Math.Max(-60, audioChunkData.LoudnessRange):0.0} LU";
+                RealTimeDynamics = $"{Math.Max(-60, audioChunkData.RealTimeDynamics):0.0} LU";
+                AverageDynamics = $"{Math.Max(-60, audioChunkData.AverageRealTimeDynamics):0.0} LU";
+                MomentaryMaxLoudness = $"{Math.Max(-60, audioChunkData.MomentaryMaxLufs):0.0} LUFS";
+                ShortTermMaxLoudness = $"{Math.Max(-60, audioChunkData.ShortTermMaxLufs):0.0} LUFS";
+                TruePeakMax = $"{Math.Max(-60, audioChunkData.TruePeakMax):0.0} dB";
+            }
+
+            // Set volume bar height
+            VolumeBarMaskHeight = Math.Min(_volumeBarHeight, _volumeBarHeight / 60 * -audioChunkData.ShortTermLufs);
+
+            // Set Volume Arrow height
+            VolumePercentPosition = Math.Min(_volumeContainerHeight, _volumeContainerHeight / 60 * -audioChunkData.IntegratedLufs);
         }
 
         #endregion // PRIVATE METHODS

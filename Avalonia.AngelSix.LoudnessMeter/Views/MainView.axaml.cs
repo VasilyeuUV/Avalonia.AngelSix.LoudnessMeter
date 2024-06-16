@@ -10,12 +10,13 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
     public partial class MainView : UserControl
     {
 
-        private Control _mainGrid;
-        private Control _channelConfigPopup;
-        private Control _channelConfigButton;
-        private Control _volumeContainer;
+        private readonly Control _mainGrid;
+        private readonly Control _channelConfigPopup;
+        private readonly Control _channelConfigButton;
+        private readonly Control _volumeContainer;
+        private readonly Control _volumeBar;
 
-        private Timer _sizingTimer;                                         // - The timeout timer to detect when auto sizing has finished firing
+        private readonly Timer _sizingTimer;                                    // - The timeout timer to detect when auto sizing has finished firing
         
 
         /// <summary>
@@ -48,7 +49,9 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
             _channelConfigPopup = this.FindControl<Control>("ChannelConfigurationPopup")
                 ?? throw new System.Exception("Cannot find Channel Configuration Popup by name");
             _volumeContainer = this.FindControl<Control>("VolumeContainer")
-                ?? throw new System.Exception("Cannot find Channel Volume Container by name");
+                ?? throw new System.Exception("Cannot find Channel Volume Container by name");            
+            _volumeBar = this.FindControl<Control>("VolumeBar")
+                ?? throw new System.Exception("Cannot find Channel Volume Bar by name");
         }
 
 
@@ -102,7 +105,10 @@ namespace Avalonia.AngelSix.LoudnessMeter.Views
         /// <summary>
         /// Update the application window/control sizes dynamically
         /// </summary>
-        private void UpdateSizes() 
-            => _MainViewModel.VolumeContainerSize = _volumeContainer.Bounds.Height;
+        private void UpdateSizes()
+        {
+            _MainViewModel.VolumeContainerHeight = _volumeContainer.Bounds.Height;
+            _MainViewModel.VolumeBarHeight = _volumeBar.Bounds.Height;
+        }
     }
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.AngelSix.LoudnessMeter.DataModels;
-using Avalonia.Threading;
 using ManagedBass;
 using NWaves.Signals;
 using NWaves.Utils;
@@ -32,16 +31,16 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
         /// CTOR (Initialize the audio capture service and starts capturing the specified device ID)
         /// </summary>
         /// <param name="device"></param>
-        public BassAudioCaptureService(int deviceId = 0, int frequency = 44100)
+        public BassAudioCaptureService(/*int deviceId = 0, int frequency = 44100*/)
         {
-            _device = deviceId;
+            //_device = deviceId;
 
             // Initialize and start
             Bass.Init();
             Bass.RecordInit(_device);
 
             // Start recording (but in a paused state)
-            _handle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, AudioChunkCaptured);
+            //_handle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, 20, AudioChunkCaptured);
 
             //// Output all devices, then select one
             //var deviceList = RecordingDevice.Enumerate();
@@ -56,6 +55,8 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
             //using var writer = new WaveFileWriter(new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read), new WaveFormat());
         }
 
+
+        //public void StartRecording() 19:56
 
         public void CaptureDefaultInput()
         {
@@ -237,14 +238,14 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
             AudioChunkAvailable?.Invoke(new AudioChunkData(
                 // TODO: Make this calculation correct
                 ShortTermLufs: averageLufs,
-                Loudness: lufs,
-                LoudnessRange: lufs + 0.9,
-                RealTimeDynamics: lufs + 0.8,
-                AverageRealTimeDynamics: lufs + 0.7,
-                TruePeakMax: lufs + 0.6,
-                IntegratedLufs: lufs + 0.5,
-                MomentaryMaxLufs: lufs + 0.4,
-                ShortTermMaxLufs: lufs + 0.3
+                Loudness: averageLufs,
+                LoudnessRange: averageLufs + (averageLufs * 0.9),
+                RealTimeDynamics: averageLufs + (averageLufs * 0.8),
+                AverageRealTimeDynamics: averageLufs + (averageLufs * 0.7),
+                TruePeakMax: averageLufs + (averageLufs * 0.6),
+                IntegratedLufs: averageLufs + (averageLufs * 0.5),
+                MomentaryMaxLufs: averageLufs + (averageLufs * 0.4),
+                ShortTermMaxLufs: averageLufs + (averageLufs * 0.3)
                 ));
         }
     }
