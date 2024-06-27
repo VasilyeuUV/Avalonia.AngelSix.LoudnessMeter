@@ -27,5 +27,12 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
         /// Stop capturing audio
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Initialises capturing of audio from a specific device
+        /// </summary>
+        /// <param name="deviceId">The device Id</param>
+        /// <param name="frequency">The frequency</param>
+        void InitCapture(int deviceId = 0, int frequency = 44100);
     }
 }

@@ -33,14 +33,31 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
         /// <param name="device"></param>
         public BassAudioCaptureService(/*int deviceId = 0, int frequency = 44100*/)
         {
-            //_device = deviceId;
-
             // Initialize and start
             Bass.Init();
+        }
+
+
+        public void InitCapture(int deviceId = 0, int frequency = 44100)
+        {
+            // Store device Id
+            _device = deviceId;
+
+            try
+            {
+                // Attempt to free previous resources
+                Bass.RecordFree();
+            }
+            catch
+            {
+                // ignore
+            }
+
+            // Initialize new device
             Bass.RecordInit(_device);
 
             // Start recording (but in a paused state)
-            //_handle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, 20, AudioChunkCaptured);
+            _handle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, 20, AudioChunkCaptured);
 
             //// Output all devices, then select one
             //var deviceList = RecordingDevice.Enumerate();
@@ -54,9 +71,6 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
             //var filePath = Path.Combine(outputPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + "wav");
             //using var writer = new WaveFileWriter(new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read), new WaveFormat());
         }
-
-
-        //public void StartRecording() 19:56
 
         public void CaptureDefaultInput()
         {

@@ -158,7 +158,8 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
         /// <param name="deviceId">The device ID</param>
         private void StartCapture(int deviceId)
         {
-            _audioCaptureService = new BassAudioCaptureService(/*deviceId*/);
+            // Initialise capturing on specific device
+            _audioCaptureService.InitCapture(deviceId);
 
             // Listen out for chunk of information
             _audioCaptureService.AudioChunkAvailable += audioChunkData =>
