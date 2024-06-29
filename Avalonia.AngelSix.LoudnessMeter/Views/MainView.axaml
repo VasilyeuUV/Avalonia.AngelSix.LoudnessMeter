@@ -10,6 +10,7 @@
              xmlns:controls="clr-namespace:Avalonia.AngelSix.LoudnessMeter.Styles;assembly=Avalonia.AngelSix.LoudnessMeter"
              xmlns:valueConverters="clr-namespace:AvaloniaLoudnessMeter.ValueConverters"
              xmlns:dataModels="clr-namespace:Avalonia.AngelSix.LoudnessMeter.DataModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              >
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
@@ -260,7 +261,7 @@
           <Label Grid.Column="0" Grid.Row="10"></Label>
 
           <!-- Volume bar -->
-          <Grid Name="VolumeBar" 
+          <Grid Name="VolumeBar"
                 Grid.Column="1" Grid.Row="0" Grid.RowSpan="11"
                 RowDefinitions="23*,37*"
                 Width="20">
@@ -277,7 +278,7 @@
                        VerticalAlignment="Top"
                        Margin="0,8,0,0"
                        Fill="{DynamicResource DarkBlueBrush}"
-                       Width="20"/>            
+                       Width="20"/>
             <Canvas>
             </Canvas>
           </Grid>
@@ -296,12 +297,12 @@
           <Label Grid.Column="2" Grid.Row="10"></Label>
 
           <!-- Arrow -->
-          <Canvas Name="VolumeContainer" 
-                  Grid.Column="3" Grid.Row="0" Grid.RowSpan="11" 
-                  Width="10" 
+          <Canvas Name="VolumeContainer"
+                  Grid.Column="3" Grid.Row="0" Grid.RowSpan="11"
+                  Width="10"
                   Margin="6,0">
-            <Path Canvas.Top="{Binding VolumePercentPosition}" 
-                  Fill="White" 
+            <Path Canvas.Top="{Binding VolumePercentPosition}"
+                  Fill="White"
                   Data="M 16 2 L 4 8 L 16 13 Z"/>
           </Canvas>
 
@@ -362,8 +363,41 @@
         </StackPanel>
       </StackPanel>
 
-      <!--Grath-->
-      <Rectangle Grid.Column="2" Fill="Black"></Rectangle>
+      <!--Graphs-->
+      <Grid Grid.Column="2">
+        <lvc:CartesianChart Series="{Binding Series}"
+                            YAxes="{Binding YAxis}"
+                            Margin="0,15,0,0"/>
+        <Grid Grid.Row="0"
+              RowDefinitions="Auto,3*,3*,3*,9*,5*,4*,9*,9*,9*,6*"
+              Margin="10, 10"
+              ColumnDefinitions="Auto,*"
+              >
+          
+          <Label Grid.Row="0" Grid.Column="0" Content="0 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="1" Grid.Column="0" Content="-3 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="2" Grid.Column="0" Content="-6 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="3" Grid.Column="0" Content="-9 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="4" Grid.Column="0" Content="-18 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="5" Grid.Column="0" Content="-23 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="6" Grid.Column="0" Content="-27 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="7" Grid.Column="0" Content="-36 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="8" Grid.Column="0" Content="-45 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+          <Label Grid.Row="9" Grid.Column="0" Content="-54 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+
+          <Rectangle Grid.Row="0" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="1" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="2" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="3" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="4" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="5" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="6" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="7" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="8" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+          <Rectangle Grid.Row="9" Grid.Column="1" Fill="White" Opacity="0.1" Height="1.5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+
+        </Grid>
+      </Grid>
 
     </Grid>
 

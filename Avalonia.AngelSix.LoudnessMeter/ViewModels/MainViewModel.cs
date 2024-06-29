@@ -7,6 +7,12 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView.Painting;
+using ShimSkiaSharp;
+using SkiaSharp;
+using System.Collections.Generic;
 
 namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
 {
@@ -76,7 +82,40 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
 
             Initialize();
         }
+
         #endregion // CTOR
+
+
+        public ISeries[] Series { get; set; }
+            = new ISeries[]
+            {
+                new LineSeries<double>
+                {
+                    Values = new double[] { 0, 60, 0, 40, 60, 20, 60 },
+                    GeometrySize = 0,
+                    GeometryStroke = null,
+                    Fill = new SolidColorPaint(new SkiaSharp.SKColor(63,77,99)),
+                    Stroke = new SolidColorPaint(new SkiaSharp.SKColor(120,152,203))
+                    {
+                        StrokeThickness = 3,
+                    }
+                }
+            };
+
+        public List<Axis> YAxis { get; set; } = new List<Axis>
+        {
+            new Axis
+            {
+                MinStep = 1,
+                ForceStepToMin = true,
+                MinLimit = 0,
+                MaxLimit = 60,
+                Labeler = (val) => (Math.Min(60, Math.Max(0, val)) - 60).ToString(),
+                //Labeler = (val) => val == 40 ? "40" : "",
+                IsVisible = false,
+                //IsInverted = true,
+            }
+        };
 
 
 
@@ -125,8 +164,6 @@ namespace Avalonia.AngelSix.LoudnessMeter.ViewModels
 
         private void Initialize()
         {
-
-
             //// Temp code to move volume position 
 
             //var tick = 0;
