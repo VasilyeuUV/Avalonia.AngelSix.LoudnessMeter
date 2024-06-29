@@ -22,7 +22,7 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
         private byte[] _buffer;                                 // - The buffer for a short capture of microphone audio
 
         private Queue<double> _lufs = new();                    // - The last few sets of captureed audio bytes, converted to LUFS
-
+        private Queue<double> _lufsLonger = new();
 
         //public event DataAvailableHandler DataAvailable;
 
@@ -239,19 +239,36 @@ namespace Avalonia.AngelSix.LoudnessMeter.Services
             // Calcilate te LUFS
             var lufs = Scale.ToDecibel(signal.Rms());
             _lufs.Enqueue(lufs);
+            _lufsLonger.Enqueue(lufs);
 
+            // Limit queue sizes
             if (_lufs.Count > 10)
             {
                 _lufs.Dequeue();
             }
+            if (_lufsLonger.Count > 200)
+            {
+                _lufsLonger.Dequeue();
+            }
 
             // Calculate the average
             var averageLufs = _lufs.Average();
+            var averageLongLufs = _lufsLonger.Average();
+
+            //if (averageLufs - 2 > averageLongLufs)
+            //{
+                
+            //    while (_lufsLonger.Count > 150)
+            //        _lufsLonger.Dequeue();
+
+            //    while (_lufsLonger.Count < 200)
+            //        _lufsLonger.Enqueue(averageLufs);
+            //}
 
             // Fire off this chunk of information to listeners
             AudioChunkAvailable?.Invoke(new AudioChunkData(
                 // TODO: Make this calculation correct
-                ShortTermLufs: averageLufs,
+                ShortTermLufs: averageLongLufs,
                 Loudness: averageLufs,
                 LoudnessRange: averageLufs + (averageLufs * 0.9),
                 RealTimeDynamics: averageLufs + (averageLufs * 0.8),
