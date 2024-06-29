@@ -1,4 +1,4 @@
-using Avalonia;
+using Avalonia.AngelSix.LoudnessMeter.Services;
 using Avalonia.AngelSix.LoudnessMeter.ViewModels;
 using Avalonia.AngelSix.LoudnessMeter.Views;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -15,18 +15,23 @@ namespace Avalonia.AngelSix.LoudnessMeter
 
         public override void OnFrameworkInitializationCompleted()
         {
+            // Initialize the dependencies
+            var audioInterface = new BassAudioCaptureService();
+            var mainViewModel = new MainViewModel(audioInterface);
+
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainViewModel()
+                    DataContext = mainViewModel
                 };
             }
             else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
             {
                 singleViewPlatform.MainView = new MainView
                 {
-                    DataContext = new MainViewModel()
+                    DataContext = mainViewModel
                 };
             }
 

@@ -1,6 +1,5 @@
-﻿using Avalonia;
+﻿using System;
 using Avalonia.ReactiveUI;
-using System;
 
 namespace Avalonia.AngelSix.LoudnessMeter.Desktop
 {
@@ -15,10 +14,16 @@ namespace Avalonia.AngelSix.LoudnessMeter.Desktop
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace()
-                .UseReactiveUI();
+        {
+            //// - дополнение, чтобы svg отображалось в дизайнере (? не обязательно)
+            //GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+            //GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+
+            return AppBuilder.Configure<App>()
+                        .UsePlatformDetect()
+                        .WithInterFont()
+                        .LogToTrace()
+                        .UseReactiveUI();
+        }
     }
 }
